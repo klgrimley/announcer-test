@@ -26,7 +26,7 @@ function ancr_addpage() {
 	
 	add_action( 'load-' . $page_id, 'ancr_admin_load' );
 }
-add_action('admin_menu', 'ancr_addpage');
+add_action('network_admin_menu', 'ancr_addpage');
 
 
 
