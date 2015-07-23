@@ -11,7 +11,7 @@ Author URI: http://www.aakashweb.com/
 define('ANCR_VERSION', '3.0');
 define('ANCR_AUTHOR', 'Aakash Chakravarthy');
 define('ANCR_URL', plugins_url('',__FILE__) );
-define('ANCR_ADMIN', admin_url( 'options-general.php?page=announcer' ) );
+define('ANCR_ADMIN', network_admin_url( 'admin.php?page=announcer' ) );
 
 $ancr_donate_link = 'http://bit.ly/ancrDonate';
 
@@ -22,7 +22,7 @@ load_plugin_textdomain('announcer', false, basename(dirname(__FILE__)) . '/langu
 
 // Admin menu
 function ancr_addpage() {
-    $page_id = add_options_page('Announcer', 'Announcer', 'manage_options', 'announcer', 'ancr_admin_page');
+    $page_id = add_menu_page('Announcer', 'Announcer', 'manage_options', 'announcer', 'ancr_admin_page');
 	
 	add_action( 'load-' . $page_id, 'ancr_admin_load' );
 }
