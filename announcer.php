@@ -161,12 +161,14 @@ function announcer( $id ){
 		
 		// Position
 		$position = ' data-pos="' . $opts['position'] . '"';
-		
+		$this_blog_id = get_current_blog_id();
+		if($this_blog_id != 1){
 		// Main output
 		echo "<!-- Start Announcement - Announcer plugin -->\n";
 		echo '<div class="announcer ' . $class . '"' . $style . $effect . $position . ' data-id="' . $id . '">' . $closebt . '<div class="announcer-content">' . $opts['content'] . '</div>';
 		echo "</div>\n";
 		echo "<!-- End Announcement - Announcer plugin -->\n";
+	}
 
 		// Note that it has been diplayed
 		$note[ $id ] = 1;
@@ -263,7 +265,8 @@ function ancr_loc_is_page( $page, $val, $operator ){
 
 // Announcer save options function
 function ancr_save_options(){
-	 if ( check_admin_referer( 'ancr_submit_form' ) ) {
+
+	if ( check_admin_referer( 'ancr_submit_form' ) ) {
 		
 		$post = array_map( 'stripslashes_deep', $_POST );
 		$options = get_option( 'announcer_data' );
@@ -285,10 +288,29 @@ function ancr_save_options(){
 		}
 		
 		$options[ 'version' ] = ANCR_VERSION;
+
+		global $wpdb;
+	$blogs = $wpdb->get_results("
+		SELECT blog_id
+		FROM {$wpdb->blogs}
+		WHERE site_id = '{$wpdb->siteid}'
+		AND spam = '0'
+		AND deleted = '0'
+		AND archived = '0'
+		");
+	$original_blog_id = get_current_blog_id();   
+	foreach ( $blogs as $blog_id ) {
+		switch_to_blog( $blog_id->blog_id );
+
 		
 		update_option( 'announcer_data', $options );
+
+		}   
+	switch_to_blog( $original_blog_id );
 		
 		wp_redirect( ANCR_ADMIN . '&action=edit&message=' . $msg . '&id=' . $ancr_id ); exit;
+
+
 		
 		//return $ancr_id;
 	}
@@ -304,8 +326,22 @@ function ancr_delete_option(){
 		$options = get_option( 'announcer_data' );
 		
 		unset( $options[ $ancr_id ] );
+		global $wpdb;
+	$blogs = $wpdb->get_results("
+		SELECT blog_id
+		FROM {$wpdb->blogs}
+		WHERE site_id = '{$wpdb->siteid}'
+		AND spam = '0'
+		AND deleted = '0'
+		AND archived = '0'
+		");
+	$original_blog_id = get_current_blog_id();   
+	foreach ( $blogs as $blog_id ) {
+		switch_to_blog( $blog_id->blog_id );
 		
 		update_option( 'announcer_data', $options );
+		}   
+	switch_to_blog( $original_blog_id );
 		
 		wp_redirect( ANCR_ADMIN . '&message=3'); exit;
 		
